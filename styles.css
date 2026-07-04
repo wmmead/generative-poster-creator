@@ -10,15 +10,22 @@ body {
     font-weight: 400;
     font-style: normal;
     color: #000;
-    position: relative;  
+    position: relative;
 }
+
 main {
     position: absolute;
-    top:0;
+    top: 0;
     left: 0;
     width: 1056px;
     height: 1632px;
     overflow: hidden;
+    transform-origin: top left;
+}
+
+.layer {
+    position: absolute;
+    inset: 0;
 }
 
 .addedtext {
@@ -34,6 +41,17 @@ main {
     box-shadow: 0 2px 6px rgba(0,0,0,0.1);
     color: #666;
     overflow-y: scroll;
+    background: white;
+}
+
+.controls-actions {
+    display: flex;
+    gap: 0.5rem;
+    padding: 15px 15px 0;
+}
+
+.controls-actions button {
+    margin-top: 0;
 }
 
 details {
@@ -45,6 +63,41 @@ details summary {
     font-weight: bold;
 }
 
+.layer-panel summary {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+}
+
+.layer-buttons {
+    display: flex;
+    gap: 0.3rem;
+}
+
+.layer-buttons button {
+    width: auto;
+    margin: 0;
+    padding: 2px 8px;
+    font-size: 0.8rem;
+    background: #e0e0e0;
+    color: #333;
+}
+
+.layer-buttons button:hover {
+    background: #ccc;
+}
+
+.layer-buttons .remove-layer:hover {
+    background: #c0392b;
+    color: white;
+}
+
+.layer-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
 form {
     background: white;
     padding: 1rem 1.5rem;
@@ -52,8 +105,8 @@ form {
 }
 
 form h2 {
-      margin-top: 0;
-      font-size: 1.2rem;
+    margin-top: 0;
+    font-size: 1.2rem;
 }
 
 label {
@@ -87,6 +140,11 @@ button:hover {
     background: #005fa3;
 }
 
+button:disabled {
+    background: #aaa;
+    cursor: not-allowed;
+}
+
 p#displaySize {
     margin-top: 1rem;
     font-size: 1rem;
@@ -100,6 +158,11 @@ p#displaySize {
     gap: 1rem;
 }
 
+.slider-value {
+    min-width: 40px;
+    text-align: right;
+}
+
 select, textarea {
     width: 100%;
     padding: 6px;
@@ -110,11 +173,12 @@ select, textarea {
 textarea {
     height: 60px;
 }
-    
+
 input[type="range"] {
     width: 220px;
     accent-color: #0078d4;
 }
+
 .zoom-level {
     min-width: 56px;
     text-align: center;
@@ -123,16 +187,16 @@ input[type="range"] {
 }
 
 @media print {
-  body * {
-    visibility: hidden;
-  }
-  main, main * {
-    visibility: visible;
-  }
-  main {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-  }
+    body * {
+        visibility: hidden;
+    }
+    main, main * {
+        visibility: visible;
+    }
+    main {
+        position: absolute;
+        top: 0;
+        left: 0;
+        transform: none !important;
+    }
 }

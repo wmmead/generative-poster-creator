@@ -8,16 +8,20 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400..700&family=EB+Garamond:ital,wght@0,400..800;1,400..800&family=Fira+Code:wght@300..700&family=IBM+Plex+Sans:ital,wght@0,100..700;1,100..700&family=Oswald:wght@200..700&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
-    
+
     <link href="styles.css" rel="stylesheet">
-    
-    <script src="script.js" defer></script>
+
+    <script type="module" src="js/main.js"></script>
 </head>
 <body>
     <main>
 
     </main>
     <div class="controls">
+        <div class="controls-actions">
+            <button type="button" id="addLayerBtn">Add Layer</button>
+            <button type="button" id="printBtn">Print / Export PDF</button>
+        </div>
         <details>
             <summary>Document Settings</summary>
             <form id="sizeForm">
@@ -36,24 +40,35 @@
             <form>
                 <label for="zoomRange">Zoom Level</label>
                 <div class="slider-container">
-                <input
-                    type="range"
-                    id="zoomRange"
-                    min="0"
-                    max="5"
-                    step="1"
-                    value="3"
-                    autocomplete="off"
-                >
-                <span class="zoom-level" id="zoomLevelDisplay">100%</span>
+                    <input
+                        type="range"
+                        id="zoomRange"
+                        min="0"
+                        max="5"
+                        step="1"
+                        value="3"
+                        autocomplete="off"
+                    >
+                    <span class="zoom-level" id="zoomLevelDisplay">100%</span>
                 </div>
             </form>
         </details>
-        <details>
-            <summary>Layer 1</summary>
-            <form id="layerForm">
-                <label for="fontFamily">Font Family</label>
-                <select id="fontFamily">
+        <div id="layersList"></div>
+    </div>
+
+    <template id="layerTemplate">
+        <details class="layer-panel" open>
+            <summary>
+                <span class="layer-name">Layer</span>
+                <span class="layer-buttons">
+                    <button type="button" class="move-up" title="Move up the list (paints earlier, further behind)">&#9650;</button>
+                    <button type="button" class="move-down" title="Move down the list (paints later, more in front)">&#9660;</button>
+                    <button type="button" class="remove-layer" title="Remove layer">&#10005;</button>
+                </span>
+            </summary>
+            <form>
+                <label>Font Family</label>
+                <select name="fontFamily">
                     <option>Oswald</option>
                     <option>Fira Code</option>
                     <option>Playfair Display</option>
@@ -64,82 +79,84 @@
 
                 <label>Min Font Size (px)</label>
                 <div class="slider-container">
-                    <input type="range" id="minFontSize" min="1" max="1000" value="1">
-                    <span class="slider-value" id="minFontSizeValue">1</span>
+                    <input type="range" name="minFontSize" min="1" max="1000" value="1">
+                    <span class="slider-value">1</span>
                 </div>
                 <label>Max Font Size (px)</label>
                 <div class="slider-container">
-                    <input type="range" id="maxFontSize" min="1" max="1000" value="1000">
-                    <span class="slider-value" id="maxFontSizeValue">1000</span>
+                    <input type="range" name="maxFontSize" min="1" max="1000" value="1000">
+                    <span class="slider-value">1000</span>
                 </div>
 
                 <label>Min Font Weight</label>
                 <div class="slider-container">
-                    <input type="range" id="minFontWeight" min="200" max="700" step="1" value="200">
-                    <span class="slider-value" id="minFontWeightValue">200</span>
+                    <input type="range" name="minFontWeight" min="100" max="800" step="1" value="300">
+                    <span class="slider-value">300</span>
                 </div>
                 <label>Max Font Weight</label>
                 <div class="slider-container">
-                    <input type="range" id="maxFontWeight" min="200" max="700" step="1" value="700">
-                    <span class="slider-value" id="maxFontWeightValue">700</span>
+                    <input type="range" name="maxFontWeight" min="100" max="800" step="1" value="700">
+                    <span class="slider-value">700</span>
                 </div>
-                <div id="font-style">
-                    
-                </div>
+                <div class="font-style"></div>
 
                 <label>Min Opacity</label>
                 <div class="slider-container">
-                    <input type="range" id="minOpacity" min="0" max="100" value="0">
-                    <span class="slider-value" id="minOpacityValue">0</span>
+                    <input type="range" name="minOpacity" min="0" max="100" value="0">
+                    <span class="slider-value">0</span>
                 </div>
                 <label>Max Opacity</label>
                 <div class="slider-container">
-                    <input type="range" id="maxOpacity" min="0" max="100" value="100">
-                    <span class="slider-value" id="maxOpacityValue">100</span>
+                    <input type="range" name="maxOpacity" min="0" max="100" value="100">
+                    <span class="slider-value">100</span>
                 </div>
 
-                <label>Left Rotation (degrees)</label>
+                <label>Min Rotation (degrees)</label>
                 <div class="slider-container">
-                    <input type="range" id="leftRotationDeg" min="0" max="180" value="180">
-                    <span class="slider-value" id="leftRotationDegValue">180</span>
+                    <input type="range" name="minRotationDeg" min="-180" max="180" value="-180">
+                    <span class="slider-value">-180</span>
                 </div>
-                <label>Right Rotation (degrees)</label>
+                <label>Max Rotation (degrees)</label>
                 <div class="slider-container">
-                    <input type="range" id="rightRotationDeg" min="0" max="180" value="180">
-                    <span class="slider-value" id="rightRotationDegValue">180</span>
+                    <input type="range" name="maxRotationDeg" min="-180" max="180" value="180">
+                    <span class="slider-value">180</span>
                 </div>
 
-                <label>RGB Color</label>
-                <input type="color" id="rgbColor" value="#000000">
+                <label>Color</label>
+                <input type="color" name="rgbColor" value="#000000">
 
                 <label>Lightness Min (%)</label>
                 <div class="slider-container">
-                    <input type="range" id="lightnesMinPercent" min="0" max="100" value="0">
-                    <span class="slider-value" id="lightnesMinPercentValue">0</span>
+                    <input type="range" name="lightnessMinPercent" min="0" max="100" value="0">
+                    <span class="slider-value">0</span>
                 </div>
                 <label>Lightness Max (%)</label>
                 <div class="slider-container">
-                    <input type="range" id="lightnesMaxPercent" min="0" max="100" value="100">
-                    <span class="slider-value" id="lightnesMaxPercentValue">100</span>
+                    <input type="range" name="lightnessMaxPercent" min="0" max="100" value="100">
+                    <span class="slider-value">100</span>
                 </div>
 
                 <label>Width Percent</label>
                 <div class="slider-container">
-                    <input type="range" id="widthPercent" min="1" max="100" value="100">
-                    <span class="slider-value" id="widthPercentValue">100</span>
+                    <input type="range" name="widthPercent" min="1" max="100" value="100">
+                    <span class="slider-value">100</span>
                 </div>
                 <label>Height Percent</label>
                 <div class="slider-container">
-                    <input type="range" id="heightPercent" min="1" max="100" value="100">
-                    <span class="slider-value" id="heightPercentValue">100</span>
+                    <input type="range" name="heightPercent" min="1" max="100" value="100">
+                    <span class="slider-value">100</span>
                 </div>
 
                 <label>Text Characters</label>
-                <textarea id="textCharacters">} { ( ) ;</textarea>
+                <textarea name="textCharacters">} { ( ) ;</textarea>
 
-                <button type="button" id="startBtn">Start</button>
-                </form>
+                <div class="layer-actions">
+                    <button type="button" class="startBtn">Start</button>
+                    <button type="button" class="stopBtn">Stop</button>
+                    <button type="button" class="clearBtn">Clear</button>
+                </div>
+            </form>
         </details>
-    </div>
+    </template>
 </body>
 </html>
