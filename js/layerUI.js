@@ -16,6 +16,19 @@ const NUMERIC_FIELDS = [
     'widthPercent', 'heightPercent'
 ];
 
+// Fields that transform the layer's container as a whole
+const TRANSFORM_FIELDS = [
+    'layerScalePercent', 'layerRotationDeg',
+    'layerOffsetXPercent', 'layerOffsetYPercent'
+];
+
+function applyLayerTransform(layer, container) {
+    container.style.transform =
+        `translate(${layer.layerOffsetXPercent}%, ${layer.layerOffsetYPercent}%) ` +
+        `rotate(${layer.layerRotationDeg}deg) ` +
+        `scale(${layer.layerScalePercent / 100})`;
+}
+
 // Parses textarea into an array of space-separated values;
 // anything in double quotes is treated as one element
 function parseTextCharacters(text) {
@@ -50,6 +63,9 @@ export function addLayerPanel(layer) {
     field('rgbColor').value = layer.rgbColor;
     field('textCharacters').value = textCharactersToString(layer.textCharacters);
     for (const name of NUMERIC_FIELDS) {
+        field(name).value = layer[name];
+    }
+    for (const name of TRANSFORM_FIELDS) {
         field(name).value = layer[name];
     }
 
@@ -93,6 +109,13 @@ export function addLayerPanel(layer) {
         field(name).addEventListener('input', e => { layer[name] = +e.target.value; });
     }
 
+    for (const name of TRANSFORM_FIELDS) {
+        field(name).addEventListener('input', e => {
+            layer[name] = +e.target.value;
+            applyLayerTransform(layer, container);
+        });
+    }
+
     field('fontFamily').addEventListener('change', e => {
         layer.fontFamily = e.target.value;
         applyFontConstraints();
@@ -120,6 +143,18 @@ export function addLayerPanel(layer) {
     panel.querySelector('.clearBtn').addEventListener('click', () => { container.innerHTML = ''; });
 
     // Header buttons (preventDefault keeps clicks from toggling the <details>)
+    const visBtn = panel.querySelector('.toggle-visibility');
+    visBtn.addEventListener('click', e => {
+        e.preventDefault();
+        layer.visible = !layer.visible;
+        container.classList.toggle('hidden', !layer.visible);
+        panel.classList.toggle('layer-hidden', !layer.visible);
+        visBtn.textContent = layer.visible ? 'Hide' : 'Show';
+        visBtn.title = layer.visible
+            ? 'Hide this layer (also excludes it from printing)'
+            : 'Show this layer';
+    });
+
     panel.querySelector('.remove-layer').addEventListener('click', e => {
         e.preventDefault();
         stopLayer(layer);

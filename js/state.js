@@ -27,7 +27,12 @@ export function createLayer() {
         lightnessMaxPercent: 100,
         widthPercent: 100,
         heightPercent: 100,
-        textCharacters: ['}', '{', '(', ')', ';']
+        textCharacters: ['}', '{', '(', ')', ';'],
+        visible: true,
+        layerScalePercent: 100,
+        layerRotationDeg: 0,
+        layerOffsetXPercent: 0,
+        layerOffsetYPercent: 0
     };
     layers.push(layer);
     return layer;

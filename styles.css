@@ -28,6 +28,10 @@ main {
     inset: 0;
 }
 
+.layer.hidden {
+    display: none;
+}
+
 .addedtext {
     position: absolute;
 }
@@ -63,10 +67,23 @@ details summary {
     font-weight: bold;
 }
 
-.layer-panel summary {
+.layer-panel > summary {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    cursor: pointer;
+}
+
+.layer-panel.layer-hidden > summary .layer-name {
+    color: #aaa;
+}
+
+.layer-transform {
+    padding: 0.5rem 1.5rem 0;
+}
+
+.layer-transform summary {
+    font-size: 1rem;
     cursor: pointer;
 }
 

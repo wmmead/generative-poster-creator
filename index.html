@@ -61,11 +61,35 @@
             <summary>
                 <span class="layer-name">Layer</span>
                 <span class="layer-buttons">
+                    <button type="button" class="toggle-visibility" title="Hide this layer (also excludes it from printing)">Hide</button>
                     <button type="button" class="move-up" title="Move up the list (paints earlier, further behind)">&#9650;</button>
                     <button type="button" class="move-down" title="Move down the list (paints later, more in front)">&#9660;</button>
                     <button type="button" class="remove-layer" title="Remove layer">&#10005;</button>
                 </span>
             </summary>
+            <details class="layer-transform">
+                <summary>Layer Transform</summary>
+                <label>Scale (%)</label>
+                <div class="slider-container">
+                    <input type="range" name="layerScalePercent" min="10" max="300" value="100">
+                    <span class="slider-value">100</span>
+                </div>
+                <label>Rotation (degrees)</label>
+                <div class="slider-container">
+                    <input type="range" name="layerRotationDeg" min="-180" max="180" value="0">
+                    <span class="slider-value">0</span>
+                </div>
+                <label>Offset X (%)</label>
+                <div class="slider-container">
+                    <input type="range" name="layerOffsetXPercent" min="-100" max="100" value="0">
+                    <span class="slider-value">0</span>
+                </div>
+                <label>Offset Y (%)</label>
+                <div class="slider-container">
+                    <input type="range" name="layerOffsetYPercent" min="-100" max="100" value="0">
+                    <span class="slider-value">0</span>
+                </div>
+            </details>
             <form>
                 <label>Font Family</label>
                 <select name="fontFamily">
