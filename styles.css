@@ -115,6 +115,22 @@ details summary {
     gap: 0.5rem;
 }
 
+.layer-actions .startBtn.running {
+    background: #2e8b57;
+}
+
+.layer-actions .startBtn.running:hover {
+    background: #257048;
+}
+
+.layer-actions .stopBtn.paused {
+    background: #c0392b;
+}
+
+.layer-actions .stopBtn.paused:hover {
+    background: #a93226;
+}
+
 form {
     background: white;
     padding: 1rem 1.5rem;

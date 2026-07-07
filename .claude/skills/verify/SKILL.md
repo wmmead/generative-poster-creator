@@ -47,3 +47,6 @@ await page.waitForSelector('#layersList .layer-panel');
 - Glyphs appear every 500ms after Start; allow ~1–2s timeouts.
 - Poster is at the page's top-left; the control panel is fixed on the right —
   screenshot clip `{ x: viewportWidth-400, y: 0, width: 400 }` captures it.
+- Playwright's `click()` leaves the pointer over the element, so `:hover`
+  styles apply — call `page.mouse.move(0, 0)` before sampling colors with
+  `getComputedStyle`.

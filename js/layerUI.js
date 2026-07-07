@@ -179,9 +179,25 @@ export function addLayerPanel(layer) {
         });
     });
 
-    // Generation controls
-    panel.querySelector('.startBtn').addEventListener('click', () => startLayer(layer, container));
-    panel.querySelector('.stopBtn').addEventListener('click', () => stopLayer(layer));
+    // Generation controls: button colors and labels reflect the layer's run state
+    const startBtn = panel.querySelector('.startBtn');
+    const stopBtn = panel.querySelector('.stopBtn');
+
+    function setRunState(state) { // 'running' | 'paused' | 'idle' (never started)
+        startBtn.classList.toggle('running', state === 'running');
+        startBtn.textContent = state === 'running' ? 'Running' : 'Start';
+        stopBtn.classList.toggle('paused', state === 'paused');
+        stopBtn.textContent = state === 'paused' ? 'Paused' : 'Pause';
+    }
+
+    startBtn.addEventListener('click', () => {
+        startLayer(layer, container);
+        setRunState('running');
+    });
+    stopBtn.addEventListener('click', () => {
+        stopLayer(layer);
+        setRunState('paused');
+    });
     panel.querySelector('.clearBtn').addEventListener('click', () => { container.innerHTML = ''; });
 
     // Header buttons (preventDefault keeps clicks from toggling the <details>)
