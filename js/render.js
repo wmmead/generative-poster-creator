@@ -1,4 +1,10 @@
-const INTERVAL_MS = 500;
+// Master interval shared by all layers; each tick reads it, so changes apply
+// to already-running layers on their next character
+let intervalMs = 500;
+
+export function setIntervalMs(ms) {
+    intervalMs = ms;
+}
 
 // Per-layer setTimeout handles, keyed by layerId (kept off the layer objects so they stay serializable)
 const timers = new Map();
@@ -43,7 +49,7 @@ export function startLayer(layer, container) {
     if (timers.has(layer.layerId)) return;
     const tick = () => {
         addChar(layer, container);
-        timers.set(layer.layerId, setTimeout(tick, INTERVAL_MS));
+        timers.set(layer.layerId, setTimeout(tick, intervalMs));
     };
     tick();
 }

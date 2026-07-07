@@ -19,7 +19,8 @@ Open with VS Code Live Server (ES modules don't load over `file://`). The poster
 is the `<main>` element (default 11"×17" at 96px/inch). A fixed control panel on
 the right has document settings (size in inches, zoom) and one collapsible panel
 per layer. Each layer "sprinkles" a random character from its character pool onto
-the page every 500ms while running, with randomized size, weight, style, opacity,
+the page on a shared interval (100–1000ms, default 500ms, master slider in Document
+Settings) while running, with randomized size, weight, style, opacity,
 rotation, color lightness, and position drawn from that layer's min/max settings.
 
 ## Architecture (vanilla JS, no build step)
@@ -31,6 +32,7 @@ rotation, color lightness, and position drawn from that layer's min/max settings
 - `js/render.js` — `addChar(layer, container)` generation logic; per-layer `setTimeout` timers in a `Map` keyed by `layerId` (kept off layer objects so they stay serializable)
 - `js/layerUI.js` — builds each layer panel from the template, wires all inputs to update the layer object live, handles Start/Pause/Clear (with run-state colors), Hide/Show, ▲▼ reorder, remove, whole-layer transforms, and the slider↔number-box sync
 - `js/pageUI.js` — document size form, zoom slider, Print/Export PDF button
+- `js/sliderBox.js` — shared slider↔number-box sync (`syncNumberBox`, `wireSliderBox`) used by both layer panels and page-level sliders
 - `js/fonts.js` — font list with per-font variable weight ranges and italic availability
 - `js/color.js` — `hexToRgb`, `hexToHsl` helpers
 
@@ -70,6 +72,13 @@ divs (and of the panels) is kept in sync with the `layers` array on reorder.
    with label "Paused" when clicked. States are per-layer; a never-started
    layer shows neutral "Start"/"Pause". Purely presentational — `render.js`
    already guarded against double-start.
+8. **Master generation-interval slider** (session 05, July 2026): one slider in
+   Document Settings (100–1000ms, default 500ms) sets the tick interval for all
+   layers at once. `render.js` reads a mutable module-level `intervalMs`
+   (exported setter `setIntervalMs`) on every tick, so changes take effect on
+   already-running layers at their next character. The slider↔number-box sync
+   was extracted from `layerUI.js` into `js/sliderBox.js` (`syncNumberBox`,
+   `wireSliderBox`) so page-level and layer sliders share the same behavior.
 
 All of the above was verified end-to-end in headless Chrome (Playwright driving
 the real UI); committed by Bill after review. The verification recipe (serve

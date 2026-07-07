@@ -38,6 +38,20 @@
             </form>
 
             <form>
+                <label for="intervalRange">Generation Interval (ms per element, all layers)</label>
+                <div class="slider-container">
+                    <input
+                        type="range"
+                        id="intervalRange"
+                        min="100"
+                        max="1000"
+                        step="10"
+                        value="500"
+                        autocomplete="off"
+                    >
+                    <input type="number" class="slider-value" value="500">
+                </div>
+
                 <label for="zoomRange">Zoom Level</label>
                 <div class="slider-container">
                     <input
