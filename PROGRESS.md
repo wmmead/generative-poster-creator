@@ -29,7 +29,7 @@ rotation, color lightness, and position drawn from that layer's min/max settings
 - `js/main.js` — entry point; first layer, Add Layer button (capped at 10 layers)
 - `js/state.js` — `layers` array, `createLayer()` factory with all defaults, remove/move helpers; layer order in the array = paint order (first = back of stack)
 - `js/render.js` — `addChar(layer, container)` generation logic; per-layer `setTimeout` timers in a `Map` keyed by `layerId` (kept off layer objects so they stay serializable)
-- `js/layerUI.js` — builds each layer panel from the template, wires all inputs to update the layer object live, handles Start/Stop/Clear, Hide/Show, ▲▼ reorder, remove, and whole-layer transforms
+- `js/layerUI.js` — builds each layer panel from the template, wires all inputs to update the layer object live, handles Start/Pause/Clear (with run-state colors), Hide/Show, ▲▼ reorder, remove, whole-layer transforms, and the slider↔number-box sync
 - `js/pageUI.js` — document size form, zoom slider, Print/Export PDF button
 - `js/fonts.js` — font list with per-font variable weight ranges and italic availability
 - `js/color.js` — `hexToRgb`, `hexToHsl` helpers
@@ -56,9 +56,25 @@ divs (and of the panels) is kept in sync with the `layers` array on reorder.
 5. **Per-layer transform** (collapsible "Layer Transform" section): scale (10–300%),
    rotation (±180°), and X/Y offset (±100%) applied to the whole layer container,
    independent of the per-character generation settings.
+6. **Typeable slider values** (session 04, July 2026): every slider's read-out is
+   an `<input type="number">` synced two ways with its slider. Validation is
+   "forgiving input, strict commit": valid in-range values apply live while
+   typing; on commit (Enter or blur) out-of-range values clamp to the slider's
+   min/max and non-numeric/empty input reverts to the last valid value, so bad
+   values can never reach layer state. Box min/max/step are copied from the
+   slider in JS (`syncNumberBox` in `layerUI.js`) — no duplication in markup,
+   and font changes re-sync the weight boxes' limits. Enter commits instead of
+   submitting the surrounding form (which would have reloaded the page).
+7. **Run-state buttons** (session 04): Start turns green with label "Running"
+   while a layer generates; the stop button is labeled "Pause" and turns red
+   with label "Paused" when clicked. States are per-layer; a never-started
+   layer shows neutral "Start"/"Pause". Purely presentational — `render.js`
+   already guarded against double-start.
 
 All of the above was verified end-to-end in headless Chrome (Playwright driving
-the real UI); committed by Bill after review.
+the real UI); committed by Bill after review. The verification recipe (serve
+with `python3 -m http.server`, drive system Chrome via `playwright-core`,
+selectors and gotchas) is saved in `.claude/skills/verify/SKILL.md`.
 
 ## Conventions / decisions
 
