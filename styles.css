@@ -175,8 +175,11 @@ p#displaySize {
     gap: 1rem;
 }
 
-.slider-value {
-    min-width: 40px;
+.slider-container input[type="number"].slider-value {
+    width: 72px;
+    min-width: 72px;
+    padding: 0.2rem 0.3rem;
+    font-size: 0.9rem;
     text-align: right;
 }
 
