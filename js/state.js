@@ -51,6 +51,16 @@ export function createLayer(mode = 'text') {
     return layer;
 }
 
+// New empty layer with all of source's settings (layers hold only plain
+// serializable data, so a structured clone copies everything safely)
+export function duplicateLayer(source) {
+    const layer = structuredClone(source);
+    layer.layerId = nextLayerId++;
+    layer.visible = true;
+    layers.push(layer);
+    return layer;
+}
+
 export function removeLayer(layer) {
     const i = layers.indexOf(layer);
     if (i !== -1) layers.splice(i, 1);

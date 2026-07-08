@@ -57,8 +57,7 @@ export function addLayerPanel(layer) {
     const panel = document.querySelector('#layerTemplate').content.firstElementChild.cloneNode(true);
     panel.dataset.layerId = layer.layerId;
     const isShape = layer.mode === 'shape';
-    panel.querySelector('.layer-name').textContent =
-        `Layer ${layer.layerId}${isShape ? ' (shapes)' : ''}`;
+    panel.querySelector('.layer-name').textContent = `Layer ${layer.layerId}`;
 
     // The template carries controls for both modes; drop the sections that
     // don't apply so the panel only shows (and wires) this layer's mode
@@ -91,31 +90,37 @@ export function addLayerPanel(layer) {
         field(name).value = layer[name];
     }
 
-    // Adjusts the weight sliders' range and the italic option to the selected font
-    function applyFontConstraints() {
+    // Adjusts the weight sliders' range and the italic option to the selected font.
+    // keepValues preserves the layer's current weight/style settings (panel init,
+    // where they may come from a duplicated layer) instead of resetting to the
+    // font's defaults (font change).
+    function applyFontConstraints(keepValues = false) {
         const info = fontWeights[layer.fontFamily];
         const minSlider = field('minFontWeight');
         const maxSlider = field('maxFontWeight');
 
         minSlider.min = maxSlider.min = info.from;
         minSlider.max = maxSlider.max = info.to;
-        minSlider.value = info.from;
-        maxSlider.value = info.to;
-        layer.minFontWeight = info.from;
-        layer.maxFontWeight = info.to;
+        if (!keepValues) {
+            layer.minFontWeight = info.from;
+            layer.maxFontWeight = info.to;
+            layer.fontStyle = 'regular';
+        }
+        minSlider.value = layer.minFontWeight;
+        maxSlider.value = layer.maxFontWeight;
         syncNumberBox(minSlider);
         syncNumberBox(maxSlider);
 
         const styleDiv = panel.querySelector('.font-style');
         styleDiv.innerHTML = '';
-        layer.fontStyle = 'regular';
         if (info.italic) {
             const radioName = `fontStyle-${layer.layerId}`;
+            const italic = layer.fontStyle === 'italic';
             styleDiv.innerHTML = `
                 <label>Font Style</label>
                 <div>
-                    <label><input type="radio" name="${radioName}" value="regular" checked> Regular</label>
-                    <label><input type="radio" name="${radioName}" value="italic"> Italic</label>
+                    <label><input type="radio" name="${radioName}" value="regular"${italic ? '' : ' checked'}> Regular</label>
+                    <label><input type="radio" name="${radioName}" value="italic"${italic ? ' checked' : ''}> Italic</label>
                 </div>
             `;
             styleDiv.querySelectorAll('input').forEach(radio => {
@@ -124,7 +129,8 @@ export function addLayerPanel(layer) {
         }
     }
 
-    if (!isShape) applyFontConstraints();
+    if (!isShape) applyFontConstraints(true);
+    applyLayerTransform(layer, container);
 
     // Wire every input to update the layer object live
     for (const name of numericFields) {
@@ -193,6 +199,12 @@ export function addLayerPanel(layer) {
         visBtn.title = layer.visible
             ? 'Hide this layer (also excludes it from printing)'
             : 'Show this layer';
+    });
+
+    // Creation (and the max-layers cap) is handled in main.js
+    panel.querySelector('.duplicate-layer').addEventListener('click', e => {
+        e.preventDefault();
+        document.dispatchEvent(new CustomEvent('duplicatelayer', { detail: layer }));
     });
 
     panel.querySelector('.remove-layer').addEventListener('click', e => {

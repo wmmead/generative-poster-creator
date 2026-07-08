@@ -93,8 +93,19 @@ divs (and of the panels) is kept in sync with the `layers` array on reorder.
    `layerTemplate` carries both `.mode-text` and `.mode-shape` sections and
    `addLayerPanel` removes the non-matching ones; `render.js` has `addShape`
    alongside `addChar` (shared randomized placement/color extracted into
-   `placeElement`), and `startLayer` picks the painter by `layer.mode`. Shape
-   panels are tagged "(shapes)" in the layer name.
+   `placeElement`), and `startLayer` picks the painter by `layer.mode`. (Shape
+   panels were briefly tagged "(shapes)" in the layer name; removed in session
+   06 to make room for the duplicate button.)
+10. **Duplicate layer** (session 06): a ⧉ button in each layer header creates a
+    new empty layer with all of the source's settings — mode, shape or font
+    settings (including the character pool), color, ranges, and transforms.
+    `duplicateLayer(source)` in `state.js` structured-clones the layer (they
+    hold only plain data by design), assigns a fresh id, and forces
+    `visible: true`. The panel dispatches a `duplicatelayer` event; `main.js`
+    handles it so the 10-layer cap stays in one place. Two init fixes made
+    panels honor non-default settings: `applyFontConstraints(keepValues)` no
+    longer resets weights/style on panel build (only on font change), and
+    `applyLayerTransform` now runs once at panel creation.
 
 All of the above was verified end-to-end in headless Chrome (Playwright driving
 the real UI); committed by Bill after review. The verification recipe (serve

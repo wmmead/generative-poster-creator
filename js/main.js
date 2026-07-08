@@ -1,4 +1,4 @@
-import { layers, createLayer, MAX_LAYERS } from './state.js';
+import { layers, createLayer, duplicateLayer, MAX_LAYERS } from './state.js';
 import { addLayerPanel } from './layerUI.js';
 import { initPageUI } from './pageUI.js';
 
@@ -19,6 +19,13 @@ function updateAddButton() {
 
 addLayerBtn.addEventListener('click', addLayer);
 document.addEventListener('layerschanged', updateAddButton);
+
+// Duplicate buttons on the layer panels: new empty layer, same settings
+document.addEventListener('duplicatelayer', e => {
+    if (layers.length >= MAX_LAYERS) return;
+    addLayerPanel(duplicateLayer(e.detail));
+    updateAddButton();
+});
 
 // Start with one layer
 addLayer();
