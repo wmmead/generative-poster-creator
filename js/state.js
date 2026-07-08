@@ -7,16 +7,12 @@ export const layers = [];
 
 let nextLayerId = 1;
 
-export function createLayer() {
+// mode: 'text' sprinkles characters, 'shape' sprinkles div shapes
+export function createLayer(mode = 'text') {
     const rgbColor = '#000000';
     const layer = {
         layerId: nextLayerId++,
-        fontFamily: 'Fira Code',
-        minFontSize: 1,
-        maxFontSize: 1000,
-        minFontWeight: 300,
-        maxFontWeight: 700,
-        fontStyle: 'regular',
+        mode,
         minOpacity: 0,
         maxOpacity: 100,
         minRotationDeg: -180,
@@ -27,13 +23,29 @@ export function createLayer() {
         lightnessMaxPercent: 100,
         widthPercent: 100,
         heightPercent: 100,
-        textCharacters: ['}', '{', '(', ')', ';'],
         visible: true,
         layerScalePercent: 100,
         layerRotationDeg: 0,
         layerOffsetXPercent: 0,
         layerOffsetYPercent: 0
     };
+    if (mode === 'shape') {
+        Object.assign(layer, {
+            shapeType: 'rectangle', // 'rectangle' | 'square' | 'circle' | 'rounded'
+            minShapeSize: 10,
+            maxShapeSize: 1000
+        });
+    } else {
+        Object.assign(layer, {
+            fontFamily: 'Fira Code',
+            minFontSize: 1,
+            maxFontSize: 1000,
+            minFontWeight: 300,
+            maxFontWeight: 700,
+            fontStyle: 'regular',
+            textCharacters: ['}', '{', '(', ')', ';']
+        });
+    }
     layers.push(layer);
     return layer;
 }

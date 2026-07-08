@@ -32,7 +32,8 @@ main {
     display: none;
 }
 
-.addedtext {
+.addedtext,
+.addedshape {
     position: absolute;
 }
 
@@ -56,6 +57,12 @@ main {
 
 .controls-actions button {
     margin-top: 0;
+}
+
+.controls-actions select {
+    width: auto;
+    margin-top: 0;
+    flex-shrink: 0;
 }
 
 details {

@@ -5,10 +5,11 @@ import { initPageUI } from './pageUI.js';
 initPageUI();
 
 const addLayerBtn = document.querySelector('#addLayerBtn');
+const newLayerMode = document.querySelector('#newLayerMode');
 
 function addLayer() {
     if (layers.length >= MAX_LAYERS) return;
-    addLayerPanel(createLayer());
+    addLayerPanel(createLayer(newLayerMode.value));
     updateAddButton();
 }
 

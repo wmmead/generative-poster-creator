@@ -7,15 +7,20 @@ import { syncNumberBox, wireSliderBox } from './sliderBox.js';
 const layersList = document.querySelector('#layersList');
 const poster = document.querySelector('main');
 
-// Fields that map 1:1 onto numeric layer properties
-const NUMERIC_FIELDS = [
-    'minFontSize', 'maxFontSize',
-    'minFontWeight', 'maxFontWeight',
+// Fields that map 1:1 onto numeric layer properties, shared by both modes
+const COMMON_NUMERIC_FIELDS = [
     'minOpacity', 'maxOpacity',
     'minRotationDeg', 'maxRotationDeg',
     'lightnessMinPercent', 'lightnessMaxPercent',
     'widthPercent', 'heightPercent'
 ];
+
+const TEXT_NUMERIC_FIELDS = [
+    'minFontSize', 'maxFontSize',
+    'minFontWeight', 'maxFontWeight'
+];
+
+const SHAPE_NUMERIC_FIELDS = ['minShapeSize', 'maxShapeSize'];
 
 // Fields that transform the layer's container as a whole
 const TRANSFORM_FIELDS = [
@@ -49,7 +54,17 @@ function textCharactersToString(chars) {
 export function addLayerPanel(layer) {
     const panel = document.querySelector('#layerTemplate').content.firstElementChild.cloneNode(true);
     panel.dataset.layerId = layer.layerId;
-    panel.querySelector('.layer-name').textContent = `Layer ${layer.layerId}`;
+    const isShape = layer.mode === 'shape';
+    panel.querySelector('.layer-name').textContent =
+        `Layer ${layer.layerId}${isShape ? ' (shapes)' : ''}`;
+
+    // The template carries controls for both modes; drop the sections that
+    // don't apply so the panel only shows (and wires) this layer's mode
+    panel.querySelectorAll(isShape ? '.mode-text' : '.mode-shape').forEach(el => el.remove());
+    const numericFields = [
+        ...COMMON_NUMERIC_FIELDS,
+        ...(isShape ? SHAPE_NUMERIC_FIELDS : TEXT_NUMERIC_FIELDS)
+    ];
 
     // Each layer's generated characters live in their own container inside <main>
     const container = document.createElement('div');
@@ -60,10 +75,14 @@ export function addLayerPanel(layer) {
     const field = name => panel.querySelector(`[name="${name}"]`);
 
     // Initialize inputs from the layer object so panel and state always agree
-    field('fontFamily').value = layer.fontFamily;
     field('rgbColor').value = layer.rgbColor;
-    field('textCharacters').value = textCharactersToString(layer.textCharacters);
-    for (const name of NUMERIC_FIELDS) {
+    if (isShape) {
+        field('shapeType').value = layer.shapeType;
+    } else {
+        field('fontFamily').value = layer.fontFamily;
+        field('textCharacters').value = textCharactersToString(layer.textCharacters);
+    }
+    for (const name of numericFields) {
         field(name).value = layer[name];
     }
     for (const name of TRANSFORM_FIELDS) {
@@ -103,10 +122,10 @@ export function addLayerPanel(layer) {
         }
     }
 
-    applyFontConstraints();
+    if (!isShape) applyFontConstraints();
 
     // Wire every input to update the layer object live
-    for (const name of NUMERIC_FIELDS) {
+    for (const name of numericFields) {
         field(name).addEventListener('input', e => { layer[name] = +e.target.value; });
     }
 
@@ -117,18 +136,24 @@ export function addLayerPanel(layer) {
         });
     }
 
-    field('fontFamily').addEventListener('change', e => {
-        layer.fontFamily = e.target.value;
-        applyFontConstraints();
-    });
+    if (isShape) {
+        field('shapeType').addEventListener('change', e => {
+            layer.shapeType = e.target.value;
+        });
+    } else {
+        field('fontFamily').addEventListener('change', e => {
+            layer.fontFamily = e.target.value;
+            applyFontConstraints();
+        });
+
+        field('textCharacters').addEventListener('input', e => {
+            layer.textCharacters = parseTextCharacters(e.target.value);
+        });
+    }
 
     field('rgbColor').addEventListener('input', e => {
         layer.rgbColor = e.target.value;
         layer.hslColor = hexToHsl(e.target.value);
-    });
-
-    field('textCharacters').addEventListener('input', e => {
-        layer.textCharacters = parseTextCharacters(e.target.value);
     });
 
     // Slider value read-outs: the number box and its slider stay in sync both ways

@@ -3,8 +3,8 @@
 ## Purpose
 
 A personal-use tool (not intended for distribution) for creating generative posters
-from pieces of text. Posters are composed of stacked layers, each with its own
-generative settings, and are exported by printing to PDF from the browser.
+from pieces of text and simple shapes. Posters are composed of stacked layers, each
+with its own generative settings, and are exported by printing to PDF from the browser.
 
 Longer-term ideas:
 - **SVG elements** as an additional layer content type (beyond text characters).
@@ -79,6 +79,20 @@ divs (and of the panels) is kept in sync with the `layers` array on reorder.
    already-running layers at their next character. The slider↔number-box sync
    was extracted from `layerUI.js` into `js/sliderBox.js` (`syncNumberBox`,
    `wireSliderBox`) so page-level and layer sliders share the same behavior.
+9. **Shape layers** (session 06, July 2026): a mode select next to Add Layer
+   ("Text" | "Shapes") sets `layer.mode` at creation; mode is fixed for the
+   layer's lifetime. Shape layers sprinkle plain divs instead of characters:
+   rectangle (width and height drawn independently from the size range),
+   square, circle (border-radius 50%), or rounded rectangle (radius = 25% of
+   the smaller side). Their panel replaces the font controls and character
+   textarea with a Shape select and Min/Max Size (px, 1–1000, defaults 10/1000);
+   opacity, rotation, color/lightness, width/height spread, transforms,
+   hide/reorder all work identically to text layers. Implementation: the one
+   `layerTemplate` carries both `.mode-text` and `.mode-shape` sections and
+   `addLayerPanel` removes the non-matching ones; `render.js` has `addShape`
+   alongside `addChar` (shared randomized placement/color extracted into
+   `placeElement`), and `startLayer` picks the painter by `layer.mode`. Shape
+   panels are tagged "(shapes)" in the layer name.
 
 All of the above was verified end-to-end in headless Chrome (Playwright driving
 the real UI); committed by Bill after review. The verification recipe (serve

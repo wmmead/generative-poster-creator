@@ -19,6 +19,10 @@
     </main>
     <div class="controls">
         <div class="controls-actions">
+            <select id="newLayerMode" title="Content type for new layers" autocomplete="off">
+                <option value="text">Text</option>
+                <option value="shape">Shapes</option>
+            </select>
             <button type="button" id="addLayerBtn">Add Layer</button>
             <button type="button" id="printBtn">Print / Export PDF</button>
         </div>
@@ -105,38 +109,61 @@
                 </div>
             </details>
             <form>
-                <label>Font Family</label>
-                <select name="fontFamily">
-                    <option>Oswald</option>
-                    <option>Fira Code</option>
-                    <option>Playfair Display</option>
-                    <option>IBM Plex Sans</option>
-                    <option>EB Garamond</option>
-                    <option>Caveat</option>
-                </select>
+                <div class="mode-text">
+                    <label>Font Family</label>
+                    <select name="fontFamily">
+                        <option>Oswald</option>
+                        <option>Fira Code</option>
+                        <option>Playfair Display</option>
+                        <option>IBM Plex Sans</option>
+                        <option>EB Garamond</option>
+                        <option>Caveat</option>
+                    </select>
 
-                <label>Min Font Size (px)</label>
-                <div class="slider-container">
-                    <input type="range" name="minFontSize" min="1" max="1000" value="1">
-                    <input type="number" class="slider-value" value="1">
-                </div>
-                <label>Max Font Size (px)</label>
-                <div class="slider-container">
-                    <input type="range" name="maxFontSize" min="1" max="1000" value="1000">
-                    <input type="number" class="slider-value" value="1000">
+                    <label>Min Font Size (px)</label>
+                    <div class="slider-container">
+                        <input type="range" name="minFontSize" min="1" max="1000" value="1">
+                        <input type="number" class="slider-value" value="1">
+                    </div>
+                    <label>Max Font Size (px)</label>
+                    <div class="slider-container">
+                        <input type="range" name="maxFontSize" min="1" max="1000" value="1000">
+                        <input type="number" class="slider-value" value="1000">
+                    </div>
+
+                    <label>Min Font Weight</label>
+                    <div class="slider-container">
+                        <input type="range" name="minFontWeight" min="100" max="800" step="1" value="300">
+                        <input type="number" class="slider-value" value="300">
+                    </div>
+                    <label>Max Font Weight</label>
+                    <div class="slider-container">
+                        <input type="range" name="maxFontWeight" min="100" max="800" step="1" value="700">
+                        <input type="number" class="slider-value" value="700">
+                    </div>
+                    <div class="font-style"></div>
                 </div>
 
-                <label>Min Font Weight</label>
-                <div class="slider-container">
-                    <input type="range" name="minFontWeight" min="100" max="800" step="1" value="300">
-                    <input type="number" class="slider-value" value="300">
+                <div class="mode-shape">
+                    <label>Shape</label>
+                    <select name="shapeType">
+                        <option value="rectangle">Rectangle</option>
+                        <option value="square">Square</option>
+                        <option value="circle">Circle</option>
+                        <option value="rounded">Rounded Rectangle</option>
+                    </select>
+
+                    <label>Min Size (px)</label>
+                    <div class="slider-container">
+                        <input type="range" name="minShapeSize" min="1" max="1000" value="10">
+                        <input type="number" class="slider-value" value="10">
+                    </div>
+                    <label>Max Size (px)</label>
+                    <div class="slider-container">
+                        <input type="range" name="maxShapeSize" min="1" max="1000" value="1000">
+                        <input type="number" class="slider-value" value="1000">
+                    </div>
                 </div>
-                <label>Max Font Weight</label>
-                <div class="slider-container">
-                    <input type="range" name="maxFontWeight" min="100" max="800" step="1" value="700">
-                    <input type="number" class="slider-value" value="700">
-                </div>
-                <div class="font-style"></div>
 
                 <label>Min Opacity</label>
                 <div class="slider-container">
@@ -185,8 +212,10 @@
                     <input type="number" class="slider-value" value="100">
                 </div>
 
-                <label>Text Characters</label>
-                <textarea name="textCharacters">} { ( ) ;</textarea>
+                <div class="mode-text">
+                    <label>Text Characters</label>
+                    <textarea name="textCharacters">} { ( ) ;</textarea>
+                </div>
 
                 <div class="layer-actions">
                     <button type="button" class="startBtn">Start</button>

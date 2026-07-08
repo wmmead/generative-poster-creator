@@ -13,12 +13,9 @@ function getRandomInt(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-export function addChar(layer, container) {
-    if (layer.textCharacters.length === 0) return;
-
-    const char = layer.textCharacters[Math.floor(Math.random() * layer.textCharacters.length)];
-    const fontSize = getRandomInt(layer.minFontSize, layer.maxFontSize);
-    const fontWeight = getRandomInt(layer.minFontWeight, layer.maxFontWeight);
+// Applies the randomized placement/appearance shared by both modes
+// (opacity, rotation, position spread) and returns the randomized hsl color
+function placeElement(layer, el) {
     const opacity = getRandomInt(layer.minOpacity, layer.maxOpacity) / 100;
     const rotation = getRandomInt(layer.minRotationDeg, layer.maxRotationDeg);
     const lightness = getRandomInt(layer.lightnessMinPercent, layer.lightnessMaxPercent);
@@ -30,6 +27,20 @@ export function addChar(layer, container) {
     const x = xMin + Math.random() * layer.widthPercent;
     const y = yMin + Math.random() * layer.heightPercent;
 
+    el.style.opacity = opacity;
+    el.style.transform = `translate(-50%, -50%) rotate(${rotation}deg)`;
+    el.style.left = `${x}%`;
+    el.style.top = `${y}%`;
+    return `hsl(${hue}, ${saturation}%, ${lightness}%)`;
+}
+
+export function addChar(layer, container) {
+    if (layer.textCharacters.length === 0) return;
+
+    const char = layer.textCharacters[Math.floor(Math.random() * layer.textCharacters.length)];
+    const fontSize = getRandomInt(layer.minFontSize, layer.maxFontSize);
+    const fontWeight = getRandomInt(layer.minFontWeight, layer.maxFontWeight);
+
     const el = document.createElement('div');
     el.className = 'addedtext';
     el.textContent = char;
@@ -37,18 +48,36 @@ export function addChar(layer, container) {
     el.style.fontStyle = layer.fontStyle === 'italic' ? 'italic' : 'normal';
     el.style.fontSize = `${fontSize}px`;
     el.style.fontWeight = fontWeight;
-    el.style.color = `hsl(${hue}, ${saturation}%, ${lightness}%)`;
-    el.style.opacity = opacity;
-    el.style.transform = `translate(-50%, -50%) rotate(${rotation}deg)`;
-    el.style.left = `${x}%`;
-    el.style.top = `${y}%`;
+    el.style.color = placeElement(layer, el);
+    container.appendChild(el);
+}
+
+export function addShape(layer, container) {
+    // Squares and circles use one random dimension; rectangles draw width and
+    // height independently from the same size range
+    const width = getRandomInt(layer.minShapeSize, layer.maxShapeSize);
+    const height = (layer.shapeType === 'square' || layer.shapeType === 'circle')
+        ? width
+        : getRandomInt(layer.minShapeSize, layer.maxShapeSize);
+
+    const el = document.createElement('div');
+    el.className = 'addedshape';
+    el.style.width = `${width}px`;
+    el.style.height = `${height}px`;
+    if (layer.shapeType === 'circle') {
+        el.style.borderRadius = '50%';
+    } else if (layer.shapeType === 'rounded') {
+        el.style.borderRadius = `${Math.min(width, height) * 0.25}px`;
+    }
+    el.style.backgroundColor = placeElement(layer, el);
     container.appendChild(el);
 }
 
 export function startLayer(layer, container) {
     if (timers.has(layer.layerId)) return;
+    const paint = layer.mode === 'shape' ? addShape : addChar;
     const tick = () => {
-        addChar(layer, container);
+        paint(layer, container);
         timers.set(layer.layerId, setTimeout(tick, intervalMs));
     };
     tick();
