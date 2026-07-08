@@ -56,8 +56,10 @@ divs (and of the panels) is kept in sync with the `layers` array on reorder.
    also excludes them from printing — hide all but one layer to print individual
    plate PDFs. Generation keeps running while hidden (view state, not a pause).
 5. **Per-layer transform** (collapsible "Layer Transform" section): scale (10–300%),
-   rotation (±180°), and X/Y offset (±100%) applied to the whole layer container,
-   independent of the per-character generation settings.
+   rotation (±180°), X/Y offset (±100%), and layer opacity (0–100%, default 100,
+   added session 06) applied to the whole layer container, independent of the
+   per-element generation settings (layer opacity multiplies with each element's
+   own randomized opacity).
 6. **Typeable slider values** (session 04, July 2026): every slider's read-out is
    an `<input type="number">` synced two ways with its slider. Validation is
    "forgiving input, strict commit": valid in-range values apply live while

@@ -27,7 +27,8 @@ export function createLayer(mode = 'text') {
         layerScalePercent: 100,
         layerRotationDeg: 0,
         layerOffsetXPercent: 0,
-        layerOffsetYPercent: 0
+        layerOffsetYPercent: 0,
+        layerOpacityPercent: 100
     };
     if (mode === 'shape') {
         Object.assign(layer, {

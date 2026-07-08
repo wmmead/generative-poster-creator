@@ -22,10 +22,11 @@ const TEXT_NUMERIC_FIELDS = [
 
 const SHAPE_NUMERIC_FIELDS = ['minShapeSize', 'maxShapeSize'];
 
-// Fields that transform the layer's container as a whole
+// Fields that affect the layer's container as a whole
 const TRANSFORM_FIELDS = [
     'layerScalePercent', 'layerRotationDeg',
-    'layerOffsetXPercent', 'layerOffsetYPercent'
+    'layerOffsetXPercent', 'layerOffsetYPercent',
+    'layerOpacityPercent'
 ];
 
 function applyLayerTransform(layer, container) {
@@ -33,6 +34,7 @@ function applyLayerTransform(layer, container) {
         `translate(${layer.layerOffsetXPercent}%, ${layer.layerOffsetYPercent}%) ` +
         `rotate(${layer.layerRotationDeg}deg) ` +
         `scale(${layer.layerScalePercent / 100})`;
+    container.style.opacity = layer.layerOpacityPercent / 100;
 }
 
 // Parses textarea into an array of space-separated values;
